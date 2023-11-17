@@ -11,10 +11,7 @@ class GildedRose
   end
 
   def update_quality
-    @items.map do |item|
-      created_item = item_selection(item.name)
-      item.sell_in, item.quality = created_item.update(item.name, item.sell_in, item.quality)
-    end
+    @items.each { |item|  item.sell_in, item.quality = item_selection(item.name).update(item) } 
   end
 end
 
@@ -48,12 +45,12 @@ def item_selection(name)
 end
 
 class ItemCreator
-  def factory_method(name, sell_in, quality)
-    DefaultItem.new(name, sell_in, quality)
+  def factory_method(item)
+    DefaultItem.new(item.name, item.sell_in, item.quality)
   end
 
-  def update(name, sell_in, quality)
-    item = factory_method(name, sell_in, quality)
+  def update(item)
+    item = factory_method(item)
     item.change
     [item.sell_in, item.quality]
   end
@@ -63,26 +60,26 @@ class DefaultItemCreator < ItemCreator
 end
 
 class SulfarusItemCreator < ItemCreator
-  def factory_method(name, sell_in, quality)
-    SulfarusItem.new(name, sell_in, quality)
+  def factory_method(item)
+    SulfarusItem.new(item.name, item.sell_in, item.quality)
   end
 end
 
 class AgedBrieItemCreator < ItemCreator
-  def factory_method(name, sell_in, quality)
-    AgedBrieItem.new(name, sell_in, quality)
+  def factory_method(item)
+    AgedBrieItem.new(item.name, item.sell_in, item.quality)
   end
 end
 
 class BackstagePassesItemCreator < ItemCreator
-  def factory_method(name, sell_in, quality)
-    BackstagePassesItem.new(name, sell_in, quality)
+  def factory_method(item)
+    BackstagePassesItem.new(item.name, item.sell_in, item.quality)
   end
 end
 
 class ConjuredItemCreator < ItemCreator
-  def factory_method(name, sell_in, quality)
-    ConjuredItem.new(name, sell_in, quality)
+  def factory_method(item)
+    ConjuredItem.new(item.name, item.sell_in, item.quality)
   end
 end
 
