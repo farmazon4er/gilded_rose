@@ -1,31 +1,20 @@
-# Gilded Rose starting position in Ruby
+Для запуска тестов у вас должен быть установлен гем rpsec
 
-## Installation
+```
+gem install rspec
+```
 
-
-## Run the unit tests from the Command-Line
-
-Ensure you have RSpec installed
-
-    gem install rspec
+Запустите тесты и убидетесь что они проходят
 
 ```
 rspec gilded_rose_spec.rb
 ```
 
-## Run the TextTest fixture from the Command-Line
-
-For e.g. 10 days:
+Вы можете выполнить программу с тестовыми данными на 10 дней с помощью команды 
 
 ```
 ruby texttest_fixture.rb 10
 ```
 
-You should make sure the command shown above works when you execute it in a terminal before trying to use TextTest (see below).
-
-## Run the TextTest approval test that comes with this project
-
-There are instructions in the [TextTest Readme](../texttests/README.md) for setting up TextTest. You will need to specify the Ruby executable and interpreter in [config.gr](../texttests/config.gr). Uncomment these lines:
-
-    executable:${TEXTTEST_HOME}/ruby/texttest_fixture.rb
-    interpreter:ruby
+При решении задания воспользовался ресурсом refactoring.guru: https://refactoring.guru/ru/replace-conditional-with-polymorphism и https://refactoring.guru/ru/design-patterns/factory-method
+Решил использовать паттерн фабрика при рефакторинге, потому что он тут хорошо подход и позволяет просто добавлять новые Item. Для добавления новых типов предметов достаточно будет создать фабрику для предмета и сам класс предмета, наследуя его от DefaultItem где необходимо переопределить его метод change, если это необходимо. Так же необходимо добавить название предмета в модуль Dict и метод item_selection 

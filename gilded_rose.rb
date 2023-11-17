@@ -1,8 +1,8 @@
 module Dict
-  SULFURAS = 'Sulfuras, Hand of Ragnaros'.freeze
-  AGED_BRI = 'Aged Brie'.freeze
-  BACKSTAGE = 'Backstage passes to a TAFKAL80ETC concert'.freeze
-  CONJURED = 'Conjured'.freeze
+  SULFURAS = 'Sulfuras, Hand of Ragnaros'
+  AGED_BRI = 'Aged Brie'
+  BACKSTAGE = 'Backstage passes to a TAFKAL80ETC concert'
+  CONJURED = 'Conjured'
 end
 
 class GildedRose
@@ -12,19 +12,8 @@ class GildedRose
 
   def update_quality
     @items.map do |item|
-      created_item = case
-      when item.name.include?(Dict::AGED_BRI)
-        AgedBrieItemCreator.new
-      when item.name.include?(Dict::SULFURAS)
-        SulfarusItemCreator.new
-      when item.name.include?(Dict::BACKSTAGE)
-        BackstagePassesItemCreator.new
-      when item.name.include?(Dict::CONJURED)
-        ConjuredItemCreator.new
-      else
-        DefaultItemCreator.new
-      end
-      item.sell_in, item.quality = created_item.next_day(item.name, item.sell_in, item.quality)
+      created_item = item_selection(item.name)
+      item.sell_in, item.quality = created_item.update(item.name, item.sell_in, item.quality)
     end
   end
 end
@@ -43,15 +32,29 @@ class Item
   end
 end
 
+def item_selection(name)
+  case
+  when name.include?(Dict::AGED_BRI)
+    AgedBrieItemCreator.new
+  when name.include?(Dict::SULFURAS)
+    SulfarusItemCreator.new
+  when name.include?(Dict::BACKSTAGE)
+    BackstagePassesItemCreator.new
+  when name.include?(Dict::CONJURED)
+    ConjuredItemCreator.new
+  else
+    DefaultItemCreator.new
+  end
+end
+
 class ItemCreator
   def factory_method(name, sell_in, quality)
     DefaultItem.new(name, sell_in, quality)
   end
 
-  def next_day(name, sell_in, quality)
+  def update(name, sell_in, quality)
     item = factory_method(name, sell_in, quality)
-    item.change_sell_in
-    item.change_quality
+    item.change
     [item.sell_in, item.quality]
   end
 end
@@ -84,40 +87,40 @@ class ConjuredItemCreator < ItemCreator
 end
 
 class DefaultItem < Item
-  def change_quality
-    @quality -= 1 if @quality > 0
-    @quality -= 1 if @quality > 0 && @sell_in < 0
-  end
-
-  def change_sell_in
+  def change
     @sell_in -= 1
+    @quality -= 1 if @quality.positive?
+    @quality -= 1 if @quality.positive? && @sell_in.negative?
   end
 end
 
 class SulfarusItem < DefaultItem
-  def change_quality;end;
-  def change_sell_in;end;
+  def change; end
 end
 
 class AgedBrieItem < DefaultItem
-  def change_quality
+  def change
+    @sell_in -= 1
     @quality += 1 if @quality < 50
-    @quality += 1 if @quality < 50 && @sell_in < 0
+    @quality += 1 if @quality < 50 && @sell_in.negative?
   end
 end
 
 class BackstagePassesItem < DefaultItem
-  def change_quality
-    return @quality = 0 if @sell_in < 0
-    @quality += 1 if  @quality < 50
-    @quality += 1 if  @quality < 50 && @sell_in < 10
-    @quality += 1 if  @quality < 50 && @sell_in < 5
+  def change
+    @sell_in -= 1
+    return @quality = 0 if @sell_in.negative?
+
+    @quality += 1 if @quality < 50
+    @quality += 1 if @quality < 50 && @sell_in < 10
+    @quality += 1 if @quality < 50 && @sell_in < 5
   end
 end
 
 class ConjuredItem < DefaultItem
-  def change_quality
-    super
-    super
+  def change
+    @sell_in -= 1
+    2.times{ @quality -= 1 if @quality.positive? }
+    2.times{ @quality -= 1 if @quality.positive? && @sell_in.negative? }
   end
 end
