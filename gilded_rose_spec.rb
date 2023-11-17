@@ -1,7 +1,5 @@
 require File.join(File.dirname(__FILE__), 'gilded_rose')
 require 'rspec'
-require 'pry'
-require 'pry-nav'
 RSpec::Matchers.define_negated_matcher(:not_change, :change)
 
 describe GildedRose do
@@ -137,14 +135,18 @@ describe GildedRose do
       let(:items) { [Item.new('Conjured Mana Cake', 4, 20)] }
 
       it 'does change quality -2, sell_in' do
-        expect { subject }.to change { items[0].quality }.from(20).to(18).and(change { items[0].sell_in }.from(4).to(3))
+        expect { subject }.to change { items[0].quality }.from(20).to(18).and(
+          change { items[0].sell_in }.from(4).to(3)
+        )
       end
 
       context 'when sell_in < 0' do
         let(:items) { [Item.new('Conjured Mana Cake', -1, 20)] }
 
         it 'does change quality -4, sell_in -1' do
-          expect { subject }.to change { items[0].quality }.from(20).to(16).and(change { items[0].sell_in }.from(-1).to(-2))
+          expect { subject }.to change { items[0].quality }.from(20).to(16).and(
+            change { items[0].sell_in }.from(-1).to(-2)
+          )
         end
       end
 
@@ -152,7 +154,9 @@ describe GildedRose do
         let(:items) { [Item.new('Conjured Mana Cake', -1, 1)] }
 
         it 'does change quality -1, sell_in -1' do
-          expect { subject }.to change { items[0].quality }.from(1).to(0).and(change { items[0].sell_in }.from(-1).to(-2))
+          expect { subject }.to change { items[0].quality }.from(1).to(0).and(
+            change { items[0].sell_in }.from(-1).to(-2)
+          )
         end
       end
     end
